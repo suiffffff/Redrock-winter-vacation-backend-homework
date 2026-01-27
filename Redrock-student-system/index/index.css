@@ -135,3 +135,29 @@ body {
   color: #000;
   transform: scale(0.98);
 }
+
+/* .my-toast {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 9999;
+  min-width: 300px;
+} */
+
+.my-toast {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 9999;
+  min-width: 300px;
+  background-color: transparent;
+  border: none;
+  box-shadow: none;
+  text-align: center;
+}
+
+.my-toast .toast-body {
+  padding: 0;
+}
