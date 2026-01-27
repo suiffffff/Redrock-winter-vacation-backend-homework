@@ -1,8 +1,5 @@
 
 
-
-
-
 function switchPage(targetPageId) {
   //隐藏所有页面
   const allPages = document.querySelectorAll('.page-container');
@@ -18,10 +15,11 @@ function switchPage(targetPageId) {
   }
 }
 
-// switchPage()
+switchPage()
 
 
 function setupLogin() {
+  switchPage('page-login')
   document.querySelector('.login-btn').addEventListener('click', async () => {
     const loginForm = document.querySelector('.login-form')
     const loginObj = serialize(loginForm, { hash: true, empty: true })
@@ -29,7 +27,7 @@ function setupLogin() {
     // console.log(loginObj)
 
     try {
-      const response = await fetch('https://redrockwork.free.beeceptor.com/login', {
+      const response = await fetch('https://dd0e0bdc-b7fc-42f3-bc87-810ef0bd3eb3.mock.pstmn.io/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -49,7 +47,7 @@ function setupLogin() {
         // 执行跳转或保存 Token
       } else {
         // 业务逻辑错误 (如密码不对)
-        const toastDom = document.querySelector('.my-toast')
+        const toastDom = document.querySelector('.login-toast')
         if (toastDom) {
           const toast = new bootstrap.Toast(toastDom)
           toast.show()
@@ -62,17 +60,137 @@ function setupLogin() {
     } catch (error) {
       // 捕获所有错误 (网络错误或解析错误)
       console.error('Catch Error:', error);
-      const toastDom = document.querySelector('.my-toast')
+      const toastDom = document.querySelector('.login-toast')
       if (toastDom) {
         const toast = new bootstrap.Toast(toastDom)
         toast.show();
       }
     }
   })
+  document.querySelector('.login-register-btn').addEventListener('click', async () => {
+    switchPage('page-register')
+    registerLogin()
+  })
 }
 setupLogin()
 
+function registerLogin() {
+  document.querySelector('.register-btn').addEventListener('click', async () => {
+    const registerForm = document.querySelector('.register-form')
+    const registerObj = serialize(registerForm, { hash: true, empty: true })
 
+    try {
+      console.log(registerObj)
+      const { username, password, nickname, department } = registerObj
+
+      if (!username || username.length < 8) {
+        alert('账号长度必须大于8位')
+        return
+      }
+
+      if (!password || password.length < 6) {
+        alert('密码长度必须大于6位')
+        return
+      }
+
+      if (!nickname || nickname.trim() === '') {
+        alert('昵称不能为空')
+        return
+      }
+
+      if (!department || department === '') {
+        alert('请选择部门')
+        return
+      }
+
+      // 检查账号是否重名
+      try {
+        const checkResponse = await fetch('https://dd0e0bdc-b7fc-42f3-bc87-810ef0bd3eb3.mock.pstmn.io/check-username', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ username })
+        })
+
+        if (!checkResponse.ok) {
+          throw new Error('检查账号失败')
+        }
+
+        const checkResult = await checkResponse.json()
+        console.log(checkResult.code)
+        if (checkResult.code === 0) {
+          // 账号已存在
+          const toastDom = document.querySelector('.register-toast')
+          if (toastDom) {
+            // 修改提示信息
+            const infoBox = toastDom.querySelector('.info-box')
+            if (infoBox) {
+              infoBox.textContent = '账号已存在'
+            }
+            const toast = new bootstrap.Toast(toastDom)
+            toast.show()
+          }
+          return
+        }
+
+        // 账号不重名，发送注册请求
+        console.log('账号可用，准备发送注册请求:', registerObj)
+
+        const registerResponse = await fetch('https://dd0e0bdc-b7fc-42f3-bc87-810ef0bd3eb3.mock.pstmn.io/register', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(registerObj)
+        })
+
+        if (!registerResponse.ok) {
+          throw new Error('注册请求失败，状态码：' + registerResponse.status)
+        }
+
+        const registerResult = await registerResponse.json()
+
+        if (registerResult.code === 0) {
+          console.log('注册成功:', registerResult)
+          // 注册成功后可以跳转到登录页面
+          alert('注册成功，请登录')
+          switchPage('page-login')
+        } else {
+          console.log('注册失败:', registerResult)
+          const toastDom = document.querySelector('.register-toast')
+          if (toastDom) {
+            const infoBox = toastDom.querySelector('.info-box')
+            if (infoBox) {
+              infoBox.textContent = registerResult.msg || '注册失败'
+            }
+            const toast = new bootstrap.Toast(toastDom)
+            toast.show()
+          }
+        }
+
+      } catch (checkError) {
+        console.error('检查账号或注册时出错:', checkError)
+        // 提示用户注册失败
+        const toastDom = document.querySelector('.register-toast')
+        if (toastDom) {
+          const infoBox = toastDom.querySelector('.info-box')
+          if (infoBox) {
+            infoBox.textContent = '注册时出错，请稍后再试'
+          }
+          const toast = new bootstrap.Toast(toastDom)
+          toast.show()
+        }
+      }
+
+    }
+    catch (error) {
+      console.error('注册时出错:', error)
+    }
+
+  })
+
+}
 
 
 
