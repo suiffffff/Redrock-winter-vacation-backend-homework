@@ -41,6 +41,8 @@ function setupLogin() {
       if (result.code === 0) {
         console.log('登录成功', result);
         // 执行跳转或保存 Token
+
+        switchPage('page-system')
       } else {
         // 业务逻辑错误 (如密码不对)
         const toastDom = document.querySelector('.login-toast')
@@ -189,6 +191,9 @@ function setupRegister() {
   })
 }
 
+function setupSystem() {
+
+}
 // 页面加载时初始化所有事件监听器
 function initApp() {
   setupLogin()
