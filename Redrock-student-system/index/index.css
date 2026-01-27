@@ -22,7 +22,8 @@ body {
 }
 
 
-.login-toast {
+.login-toast,
+.register-toast {
   position: fixed;
   top: 20px;
   left: 50%;
@@ -35,7 +36,8 @@ body {
   text-align: center;
 }
 
-.login-toast .toast-body {
+.login-toast .toast-body,
+.register-toast .toast-body {
   padding: 0;
 }
 
@@ -101,7 +103,10 @@ body {
   box-shadow: 0 0 0 4px rgba(0, 0, 0, 0.2);
 }
 
-.login-btn {
+.login-btn,
+.login-register-btn,
+.register-btn,
+.comeback-btn {
   display: block;
   width: 100%;
   margin-top: 20px;
@@ -116,82 +121,19 @@ body {
   transition: all 0.3s ease;
 }
 
-.login-btn:hover {
+.login-btn:hover,
+.login-register-btn:hover,
+.register-btn:hover,
+.comeback-btn:hover {
   background-color: #000;
   color: #fff;
 }
 
-.login-btn:active {
+.login-btn:active,
+.login-register-btn:active,
+.register-btn:active,
+.comeback-btn:active {
   background-color: #fff;
   color: #000;
   transform: scale(0.98);
-}
-
-.login-register-btn {
-  display: block;
-  width: 100%;
-  margin-top: 10px;
-  padding: 12px;
-  background-color: #fff;
-  color: #000;
-  border: none;
-  border-radius: 10px;
-  font-size: 16px;
-  font-weight: bold;
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-.login-register-btn:hover {
-  background-color: #000;
-  color: #fff;
-}
-
-.login-register-btn:active {
-  background-color: #fff;
-  color: #000;
-  transform: scale(0.98);
-}
-
-.register-btn {
-  display: block;
-  width: 100%;
-  margin-top: 10px;
-  padding: 12px;
-  background-color: #fff;
-  color: #000;
-  border: none;
-  border-radius: 10px;
-  font-size: 16px;
-  font-weight: bold;
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-.register-btn:hover {
-  background-color: #000;
-  color: #fff;
-}
-
-.register-btn:active {
-  background-color: #fff;
-  color: #000;
-  transform: scale(0.98);
-}
-
-.register-toast {
-  position: fixed;
-  top: 20px;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 9999;
-  min-width: 300px;
-  background-color: transparent;
-  border: none;
-  box-shadow: none;
-  text-align: center;
-}
-
-.register-toast .toast-body {
-  padding: 0;
 }

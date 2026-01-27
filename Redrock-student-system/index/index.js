@@ -1,5 +1,3 @@
-
-
 function switchPage(targetPageId) {
   //隐藏所有页面
   const allPages = document.querySelectorAll('.page-container');
@@ -15,16 +13,14 @@ function switchPage(targetPageId) {
   }
 }
 
-switchPage()
+switchPage('page-login')
 
-
+// 登录页面事件设置
 function setupLogin() {
   switchPage('page-login')
   document.querySelector('.login-btn').addEventListener('click', async () => {
     const loginForm = document.querySelector('.login-form')
     const loginObj = serialize(loginForm, { hash: true, empty: true })
-    // console.log(loginForm)
-    // console.log(loginObj)
 
     try {
       const response = await fetch('https://dd0e0bdc-b7fc-42f3-bc87-810ef0bd3eb3.mock.pstmn.io/login', {
@@ -67,14 +63,13 @@ function setupLogin() {
       }
     }
   })
-  document.querySelector('.login-register-btn').addEventListener('click', async () => {
+  document.querySelector('.login-register-btn').addEventListener('click', () => {
     switchPage('page-register')
-    registerLogin()
   })
 }
-setupLogin()
 
-function registerLogin() {
+// 注册页面事件设置
+function setupRegister() {
   document.querySelector('.register-btn').addEventListener('click', async () => {
     const registerForm = document.querySelector('.register-form')
     const registerObj = serialize(registerForm, { hash: true, empty: true })
@@ -189,8 +184,16 @@ function registerLogin() {
     }
 
   })
-
+  document.querySelector('.comeback-btn').addEventListener('click', () => {
+    switchPage('page-login')
+  })
 }
 
+// 页面加载时初始化所有事件监听器
+function initApp() {
+  setupLogin()
+  setupRegister()
+}
 
-
+// 初始化应用
+initApp()
