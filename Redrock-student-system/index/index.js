@@ -549,7 +549,7 @@ function setupSystem() {
           <div class="homework-detail-actions">
             <button class="homework-back-btn" data-homework-id="${homework.id}">返回</button>
             <h3>${homework.title || '未命名作业'}</h3>
-            <button class="homework-edit-btn" data-homework-id="${homework.id}">修改作业</button>
+            <button class="homework-grade-btn" data-homework-id="${homework.id}">批改作业</button>
           </div>
           <div class="homework-detail-meta">
             <span class="homework-detail-deadline${isOverdue ? ' overdue' : ''}">截止: ${homework.deadline ? this.formatDateTime(homework.deadline) : '未设置'}</span>
@@ -568,15 +568,15 @@ function setupSystem() {
           <h4>提交作业</h4>
           <div class="submission-form">
             <div class="form-group">
-              <label for="submission-text-${homework.id}">作业说明</label>
-              <textarea id="submission-text-${homework.id}" class="form-control" rows="4" placeholder="请输入作业说明..."></textarea>
-            </div>
-            <div class="form-group">
-              <label for="submission-file-${homework.id}">上传文件</label>
-              <input type="file" id="submission-file-${homework.id}" class="form-control-file">
+              <label for="submission-text-${homework.id}">作业内容</label>
+              <textarea id="submission-text-${homework.id}" class="form-control" rows="4" placeholder="请输入作业内容..."></textarea>
             </div>
             <button class="submission-btn" data-homework-id="${homework.id}">提交作业</button>
           </div>
+        </div>
+        <div class="homework-edit-section">
+          <button class="homework-edit-btn" data-homework-id="${homework.id}">修改作业</button>
+          <button class="homework-delete-btn" data-homework-id="${homework.id}">删除作业</button>
         </div>
         <div class="homework-id hidden">${homework.id}</div>
       `;
@@ -590,12 +590,89 @@ function setupSystem() {
         });
       }
 
+      // 添加批改按钮点击事件
+      const gradeBtn = card.querySelector('.homework-grade-btn');
+      if (gradeBtn) {
+        gradeBtn.addEventListener('click', () => {
+          alert('批改作业功能开发中...');
+        });
+      }
+
       // 添加修改按钮点击事件
       const editBtn = card.querySelector('.homework-edit-btn');
       if (editBtn) {
         editBtn.addEventListener('click', () => {
-          alert('修改作业功能开发中...');
+          // 填充修改作业模态框数据
+          this.fillEditHomeworkModal(homework);
+          // 显示修改作业模态框
+          const editModal = new bootstrap.Modal(document.getElementById('editHomeworkModal'));
+          editModal.show();
         });
+      }
+
+      // 添加删除按钮点击事件
+      const deleteBtn = card.querySelector('.homework-delete-btn');
+      if (deleteBtn) {
+        deleteBtn.addEventListener('click', () => {
+          // 存储当前要删除的作业ID
+          window.currentDeleteHomeworkId = homework.id;
+          // 显示删除确认模态框
+          const deleteModal = new bootstrap.Modal(document.getElementById('deleteHomeworkModal'));
+          deleteModal.show();
+        });
+      }
+
+      // 添加确认删除按钮点击事件
+      const confirmDeleteBtn = document.getElementById('confirmDeleteBtn');
+      if (confirmDeleteBtn) {
+        // 移除之前的事件监听器，避免重复绑定
+        confirmDeleteBtn.removeEventListener('click', handleConfirmDelete);
+        // 添加新的事件监听器
+        confirmDeleteBtn.addEventListener('click', handleConfirmDelete);
+      }
+
+      // 确认删除处理函数
+      async function handleConfirmDelete() {
+        const homeworkId = window.currentDeleteHomeworkId;
+        if (homeworkId) {
+          // 关闭模态框
+          const deleteModal = bootstrap.Modal.getInstance(document.getElementById('deleteHomeworkModal'));
+          if (deleteModal) {
+            deleteModal.hide();
+          }
+          // 执行删除操作
+          try {
+            const response = await request(`/homework/${homeworkId}`, {
+              method: "DELETE"
+            });
+
+            if (!response.ok) {
+              throw new Error('删除作业失败，状态码：' + response.status);
+            }
+
+            const result = await response.json();
+
+            if (result.code === 0) {
+              // 删除成功
+              console.log('删除作业成功:', result);
+              alert('作业删除成功！');
+
+              // 重新渲染作业列表
+              homeworkPagination.init();
+            } else {
+              // 业务逻辑错误
+              console.log('删除作业失败:', result);
+              alert(result.message || '删除作业失败');
+            }
+          } catch (error) {
+            // 网络错误或其他错误
+            console.error('删除作业时出错:', error);
+            alert('删除作业时出错，请稍后再试');
+          } finally {
+            // 清除存储的作业ID
+            window.currentDeleteHomeworkId = null;
+          }
+        }
       }
 
       // 添加提交按钮点击事件
@@ -667,6 +744,33 @@ function setupSystem() {
       if (pagination) {
         pagination.style.pointerEvents = '';
         pagination.style.opacity = '';
+      }
+    },
+
+    // 填充修改作业模态框数据
+    fillEditHomeworkModal(homework) {
+      if (!homework) return;
+
+      // 填充作业ID
+      document.getElementById('edit-homework-id').value = homework.id;
+      // 填充作业标题
+      document.getElementById('edit-homework-title').value = homework.title || '';
+      // 填充作业描述
+      document.getElementById('edit-homework-description').value = homework.description || '';
+      // 填充截止时间
+      if (homework.deadline) {
+        const deadlineInput = document.getElementById('edit-homework-deadline');
+        if (deadlineInput) {
+          // 将ISO日期格式转换为datetime-local格式
+          const deadline = new Date(homework.deadline);
+          const localDateTime = deadline.toISOString().slice(0, 16);
+          deadlineInput.value = localDateTime;
+        }
+      }
+      // 填充允许补交
+      const allowLateInput = document.getElementById('edit-homework-allow-late');
+      if (allowLateInput) {
+        allowLateInput.checked = homework.allow_late || false;
       }
     },
 
@@ -991,6 +1095,68 @@ function setupSystem() {
       alert('添加作业时出错，请稍后再试')
     }
   })
+
+  // 修改作业表单处理
+  const editHomeworkForm = document.getElementById('editHomeworkForm')
+  if (editHomeworkForm) {
+    editHomeworkForm.addEventListener('submit', async (e) => {
+      e.preventDefault()
+
+      // 表单验证
+      if (!editHomeworkForm.checkValidity()) {
+        e.stopPropagation()
+        editHomeworkForm.classList.add('was-validated')
+        return
+      }
+
+      // 收集表单数据
+      const formData = {
+        id: document.getElementById('edit-homework-id').value,
+        title: document.getElementById('edit-homework-title').value,
+        description: document.getElementById('edit-homework-description').value,
+        deadline: document.getElementById('edit-homework-deadline').value,
+        allow_late: document.getElementById('edit-homework-allow-late').checked
+      }
+
+      try {
+        // 提交到后端API
+        const response = await request(`/homework/${formData.id}`, {
+          method: 'PUT',
+          body: JSON.stringify(formData)
+        })
+
+        if (!response.ok) {
+          throw new Error('修改作业失败')
+        }
+
+        const result = await response.json()
+
+        if (result.code === 0) {
+          // 修改成功
+          console.log('修改作业成功:', result)
+          alert('作业修改成功！')
+
+          // 关闭模态弹窗
+          const modal = bootstrap.Modal.getInstance(document.getElementById('editHomeworkModal'))
+          modal.hide()
+
+          // 重置表单
+          editHomeworkForm.reset()
+          editHomeworkForm.classList.remove('was-validated')
+
+          // 这里可以添加刷新作业列表的逻辑
+        } else {
+          // 业务逻辑错误
+          console.log('修改作业失败:', result)
+          alert(result.msg || '修改作业失败')
+        }
+      } catch (error) {
+        // 网络错误或其他错误
+        console.error('修改作业时出错:', error)
+        alert('修改作业时出错，请稍后再试')
+      }
+    })
+  }
 
 
   // 聊天功能

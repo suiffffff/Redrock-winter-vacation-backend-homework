@@ -200,6 +200,44 @@
       </div>
     </div>
 
+    <!--修改作业模态弹窗 -->
+    <div class="modal fade" id="editHomeworkModal" tabindex="-1" aria-labelledby="editHomeworkModalLabel"
+      aria-hidden="true">
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="editHomeworkModalLabel">修改作业</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <form id="editHomeworkForm">
+            <input type="hidden" id="edit-homework-id">
+            <div class="modal-body">
+              <div class="mb-3">
+                <label for="edit-homework-title" class="form-label">作业标题 *</label>
+                <input type="text" class="form-control" id="edit-homework-title" required>
+              </div>
+              <div class="mb-3">
+                <label for="edit-homework-description" class="form-label">作业描述/要求 *</label>
+                <textarea class="form-control" id="edit-homework-description" rows="4" required></textarea>
+              </div>
+              <div class="mb-3">
+                <label for="edit-homework-deadline" class="form-label">截止时间 *</label>
+                <input type="datetime-local" class="form-control" id="edit-homework-deadline" required>
+              </div>
+              <div class="mb-3 form-check">
+                <input type="checkbox" class="form-check-input" id="edit-homework-allow-late">
+                <label class="form-check-label" for="edit-homework-allow-late">允许补交</label>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+              <button type="submit" class="btn btn-primary">保存修改</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
     <!--API Key配置模态弹窗 -->
     <div class="modal fade" id="apiKeyModal" tabindex="-1" aria-labelledby="apiKeyModalLabel" aria-hidden="true">
       <div class="modal-dialog">
@@ -225,6 +263,26 @@
               <button type="submit" class="btn btn-primary">保存配置</button>
             </div>
           </form>
+        </div>
+      </div>
+    </div>
+
+    <!--删除作业确认模态弹窗 -->
+    <div class="modal fade" id="deleteHomeworkModal" tabindex="-1" aria-labelledby="deleteHomeworkModalLabel"
+      aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="deleteHomeworkModalLabel">确认删除</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <p>确定要删除此作业吗？此操作不可恢复。</p>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+            <button type="button" class="btn btn-danger" id="confirmDeleteBtn">确认删除</button>
+          </div>
         </div>
       </div>
     </div>

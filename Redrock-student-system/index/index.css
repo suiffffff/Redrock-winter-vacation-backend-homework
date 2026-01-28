@@ -1133,7 +1133,7 @@ body {
 }
 
 .homework-card-expanded .homework-back-btn,
-.homework-card-expanded .homework-edit-btn {
+.homework-card-expanded .homework-grade-btn {
   padding: 6px 12px;
   border: 1px solid #ced4da;
   background-color: #fff;
@@ -1144,9 +1144,51 @@ body {
 }
 
 .homework-card-expanded .homework-back-btn:hover,
-.homework-card-expanded .homework-edit-btn:hover {
+.homework-card-expanded .homework-grade-btn:hover {
   background-color: #f8f9fa;
   border-color: #adb5bd;
+}
+
+.homework-card-expanded .homework-edit-section {
+  padding: 20px;
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  border-top: 1px solid #e9ecef;
+}
+
+.homework-card-expanded .homework-edit-btn {
+  padding: 10px 24px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.homework-card-expanded .homework-edit-btn:hover {
+  background-color: #0069d9;
+  border-color: #0062cc;
+}
+
+.homework-card-expanded .homework-delete-btn {
+  padding: 10px 24px;
+  background-color: #dc3545;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.homework-card-expanded .homework-delete-btn:hover {
+  background-color: #c82333;
+  border-color: #bd2130;
 }
 
 .homework-card-expanded .homework-detail-actions h3 {
@@ -1268,6 +1310,8 @@ body {
   font-weight: 500;
   cursor: pointer;
   transition: background-color 0.2s;
+  display: block;
+  margin: 0 auto;
 }
 
 .homework-card-expanded .submission-btn:hover {
