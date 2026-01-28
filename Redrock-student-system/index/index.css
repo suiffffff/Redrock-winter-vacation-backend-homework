@@ -276,8 +276,16 @@ body {
 /* 作业页面样式 */
 .homework-container {
   display: flex;
+  flex-direction: column;
+  gap: 50px;
+  align-items: flex-start;
+}
+
+.homework-content {
+  display: flex;
   gap: 20px;
   align-items: flex-start;
+  width: 100%;
 }
 
 .filter-sidebar {
@@ -468,6 +476,11 @@ body {
   font-size: 14px;
   line-height: 1.5;
   color: #666;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .homework-card-footer {
@@ -791,4 +804,56 @@ body {
 #page-system {
   padding-top: 80px;
   min-height: 100vh;
+}
+
+/* 分页样式 */
+.homework-pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  margin-top: 0;
+  padding: 16px 0;
+  width: 100%;
+}
+
+.pagination-btn {
+  padding: 8px 16px;
+  border: 1px solid #ced4da;
+  background-color: #fff;
+  border-radius: 6px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.pagination-btn:hover:not(:disabled) {
+  background-color: #f8f9fa;
+  border-color: #adb5bd;
+}
+
+.pagination-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.pagination-btn.active {
+  background-color: #007bff;
+  color: white;
+  border-color: #007bff;
+}
+
+.pagination-btn.active:hover {
+  background-color: #0069d9;
+  border-color: #0069d9;
+}
+
+.pagination-numbers {
+  display: flex;
+  gap: 4px;
+}
+
+.pagination-numbers .pagination-btn {
+  min-width: 40px;
+  padding: 8px 12px;
 }

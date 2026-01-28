@@ -313,8 +313,7 @@ function setupRegister() {
 
 
 function setupSystem() {
-  const dropdownBtn = document.querySelector('.dropdown-btn')
-  dropdownBtn.addEventListener('click', (e) => {
+  document.querySelector('.dropdown-btn').addEventListener('click', (e) => {
     e.stopPropagation();
     const dropdownMenu = document.getElementById('userDropdown')
     dropdownMenu.classList.toggle('show');
@@ -329,6 +328,148 @@ function setupSystem() {
   });
 
   // 导航栏切换
+  // 分页功能
+  const homeworkPagination = {
+    currentPage: 1,
+    itemsPerPage: 3,
+    totalPages: 2,
+    allHomeworkCards: [],
+
+    init() {
+      const grid = document.getElementById('homeworkGrid');
+      if (!grid) return;
+
+      this.allHomeworkCards = Array.from(grid.querySelectorAll('.homework-card'));
+      this.calculateItemsPerPage();
+      this.updateTotalPages();
+      this.bindEvents();
+      this.renderPage(1);
+      this.bindResizeEvent();
+    },
+
+    bindResizeEvent() {
+      window.addEventListener('resize', () => {
+        const oldItemsPerPage = this.itemsPerPage;
+        this.calculateItemsPerPage();
+
+        if (oldItemsPerPage !== this.itemsPerPage) {
+          this.updateTotalPages();
+          this.renderPage(1);
+        }
+      });
+    },
+
+    calculateItemsPerPage() {
+      const grid = document.getElementById('homeworkGrid');
+      if (!grid) return;
+
+      const computedStyle = window.getComputedStyle(grid);
+      const gridTemplateColumns = computedStyle.getPropertyValue('grid-template-columns');
+      const columnCount = gridTemplateColumns.split(' ').length;
+
+      this.itemsPerPage = columnCount * 3;
+    },
+
+    async updateTotalPages() {
+      try {
+        const response = await request('/homework/count', {
+          method: 'GET'
+        });
+
+        if (response.ok) {
+          const result = await response.json();
+          if (result.code === 0 && result.data && result.data.total !== undefined) {
+            const totalItems = result.data.total;
+            this.totalPages = Math.ceil(totalItems / this.itemsPerPage);
+          }
+        }
+      } catch (error) {
+        console.log('获取作业总数失败，使用默认计算');
+        this.totalPages = Math.ceil(this.allHomeworkCards.length / this.itemsPerPage);
+      }
+
+      if (this.totalPages < 1) {
+        this.totalPages = Math.max(1, Math.ceil(this.allHomeworkCards.length / this.itemsPerPage));
+      }
+    },
+
+    setTotalPages(totalPages) {
+      this.totalPages = totalPages;
+      if (this.totalPages < 1) {
+        this.totalPages = 1;
+      }
+      this.renderPaginationNumbers();
+    },
+
+    renderPage(page) {
+      if (page < 1 || page > this.totalPages) return;
+
+      this.currentPage = page;
+      const startIndex = (page - 1) * this.itemsPerPage;
+      const endIndex = startIndex + this.itemsPerPage;
+
+      this.allHomeworkCards.forEach((card, index) => {
+        if (index >= startIndex && index < endIndex) {
+          card.style.display = '';
+        } else {
+          card.style.display = 'none';
+        }
+      });
+
+      this.updatePaginationControls();
+    },
+
+    renderPaginationNumbers() {
+      const container = document.getElementById('paginationNumbers');
+      if (!container) return;
+
+      container.innerHTML = '';
+
+      for (let i = 1; i <= this.totalPages; i++) {
+        const btn = document.createElement('button');
+        btn.className = `pagination-btn${i === this.currentPage ? ' active' : ''}`;
+        btn.textContent = i;
+        btn.addEventListener('click', () => this.renderPage(i));
+        container.appendChild(btn);
+      }
+    },
+
+    updatePaginationControls() {
+      const prevBtn = document.getElementById('prevPageBtn');
+      const nextBtn = document.getElementById('nextPageBtn');
+
+      if (prevBtn) {
+        prevBtn.disabled = this.currentPage <= 1;
+      }
+      if (nextBtn) {
+        nextBtn.disabled = this.currentPage >= this.totalPages;
+      }
+
+      this.renderPaginationNumbers();
+    },
+
+    bindEvents() {
+      const prevBtn = document.getElementById('prevPageBtn');
+      const nextBtn = document.getElementById('nextPageBtn');
+
+      if (prevBtn) {
+        prevBtn.addEventListener('click', () => {
+          if (this.currentPage > 1) {
+            this.renderPage(this.currentPage - 1);
+          }
+        });
+      }
+
+      if (nextBtn) {
+        nextBtn.addEventListener('click', () => {
+          if (this.currentPage < this.totalPages) {
+            this.renderPage(this.currentPage + 1);
+          }
+        });
+      }
+    }
+  };
+
   const toolbarBtns = document.querySelectorAll('.toolbar-btn')
   toolbarBtns.forEach((btn, index) => {
     btn.addEventListener('click', () => {
@@ -336,98 +477,95 @@ function setupSystem() {
       contentSections.forEach(section => section.classList.add('hidden'))
 
       if (index === 0) {
-        // 首页
         document.getElementById('content-home').classList.remove('hidden')
       } else if (index === 1) {
-        // 作业
         document.getElementById('content-homework').classList.remove('hidden')
+        homeworkPagination.init()
       }
     })
   })
 
   // 筛选表单收起/展开
   const toggleFilter = document.querySelector('.toggle-filter')
-  if (toggleFilter) {
-    toggleFilter.addEventListener('click', () => {
-      const filterSidebar = document.querySelector('.filter-sidebar')
-      const filterForm = document.querySelector('.filter-form')
-      const filterTitle = document.querySelector('.filter-header h4')
+  toggleFilter.addEventListener('click', () => {
+    const filterSidebar = document.querySelector('.filter-sidebar')
+    const filterForm = document.querySelector('.filter-form')
+    const filterTitle = document.querySelector('.filter-header h4')
 
-      filterSidebar.classList.toggle('collapsed')
+    filterSidebar.classList.toggle('collapsed')
 
-      if (filterSidebar.classList.contains('collapsed')) {
-        if (filterForm) filterForm.style.display = 'none'
-        if (filterTitle) filterTitle.style.display = 'none'
-        toggleFilter.textContent = '≡'
-      } else {
-        if (filterForm) filterForm.style.display = 'block'
-        if (filterTitle) filterTitle.style.display = 'block'
-        toggleFilter.textContent = '≡'
-      }
-    })
-  }
+    if (filterSidebar.classList.contains('collapsed')) {
+      if (filterForm) filterForm.style.display = 'none'
+      if (filterTitle) filterTitle.style.display = 'none'
+      toggleFilter.textContent = '≡'
+    } else {
+      if (filterForm) filterForm.style.display = 'block'
+      if (filterTitle) filterTitle.style.display = 'block'
+      toggleFilter.textContent = '≡'
+    }
+  })
+
 
   // 增加作业表单处理
   const addHomeworkForm = document.getElementById('addHomeworkForm')
-  if (addHomeworkForm) {
-    addHomeworkForm.addEventListener('submit', async (e) => {
-      e.preventDefault()
+  addHomeworkForm.addEventListener('submit', async (e) => {
+    e.preventDefault()
 
-      // 表单验证
-      if (!addHomeworkForm.checkValidity()) {
-        e.stopPropagation()
-        addHomeworkForm.classList.add('was-validated')
-        return
+    // 表单验证
+    if (!addHomeworkForm.checkValidity()) {
+      e.stopPropagation()
+      addHomeworkForm.classList.add('was-validated')
+      return
+    }
+
+    // 收集表单数据
+    const formData = {
+      title: document.getElementById('homework-title').value,
+      description: document.getElementById('homework-description').value,
+      department: document.getElementById('homework-department').value,
+      deadline: document.getElementById('homework-deadline').value,
+      allow_late: document.getElementById('homework-allow-late').checked
+    }
+
+    try {
+      // 提交到后端API
+      const response = await request('/homework', {
+        method: 'POST',
+        body: JSON.stringify(formData)
+      })
+
+      if (!response.ok) {
+        throw new Error('添加作业失败')
       }
 
-      // 收集表单数据
-      const formData = {
-        title: document.getElementById('homework-title').value,
-        description: document.getElementById('homework-description').value,
-        department: document.getElementById('homework-department').value,
-        deadline: document.getElementById('homework-deadline').value,
-        allow_late: document.getElementById('homework-allow-late').checked
+      const result = await response.json()
+
+      if (result.code === 0) {
+        // 添加成功
+        console.log('添加作业成功:', result)
+        alert('作业添加成功！')
+
+        // 关闭模态弹窗
+        const modal = bootstrap.Modal.getInstance(document.getElementById('addHomeworkModal'))
+        modal.hide()
+
+        // 重置表单
+        addHomeworkForm.reset()
+        addHomeworkForm.classList.remove('was-validated')
+
+        // 这里可以添加刷新作业列表的逻辑
+      } else {
+        // 业务逻辑错误
+        console.log('添加作业失败:', result)
+        alert(result.msg || '添加作业失败')
       }
+    } catch (error) {
+      // 网络错误或其他错误
+      console.error('添加作业时出错:', error)
+      alert('添加作业时出错，请稍后再试')
+    }
+  })
 
-      try {
-        // 提交到后端API
-        const response = await request('/homework', {
-          method: 'POST',
-          body: JSON.stringify(formData)
-        })
-
-        if (!response.ok) {
-          throw new Error('添加作业失败')
-        }
-
-        const result = await response.json()
-
-        if (result.code === 0) {
-          // 添加成功
-          console.log('添加作业成功:', result)
-          alert('作业添加成功！')
-
-          // 关闭模态弹窗
-          const modal = bootstrap.Modal.getInstance(document.getElementById('addHomeworkModal'))
-          modal.hide()
-
-          // 重置表单
-          addHomeworkForm.reset()
-          addHomeworkForm.classList.remove('was-validated')
-
-          // 这里可以添加刷新作业列表的逻辑
-        } else {
-          // 业务逻辑错误
-          console.log('添加作业失败:', result)
-          alert(result.msg || '添加作业失败')
-        }
-      } catch (error) {
-        // 网络错误或其他错误
-        console.error('添加作业时出错:', error)
-        alert('添加作业时出错，请稍后再试')
-      }
-    })
-  }
 
   // 聊天功能
   const chatInput = document.getElementById('chat-input')

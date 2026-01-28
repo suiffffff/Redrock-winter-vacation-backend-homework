@@ -243,6 +243,7 @@
                   <span class="dropdown-icon">▼</span>
                 </button>
                 <div class="model-dropdown-menu" id="model-dropdown-menu">
+                  <button class="model-option">模型</button>
                   <button class="model-option" data-model="gemini">Gemini</button>
                   <button class="model-option" data-model="deepseek">DeepSeek</button>
                 </div>
@@ -262,117 +263,132 @@
       <!-- 作业内容 -->
       <div id="content-homework" class="content-section hidden">
         <div class="homework-container">
-          <!-- 左侧筛选表单 -->
-          <div class="filter-sidebar">
-            <div class="filter-header">
-              <h4>筛选条件</h4>
-              <button class="toggle-filter">≡</button>
+          <div class="homework-content">
+            <!-- 左侧筛选表单 -->
+            <div class="filter-sidebar">
+              <div class="filter-header">
+                <h4>筛选条件</h4>
+                <button class="toggle-filter">≡</button>
+              </div>
+              <div class="filter-form">
+                <div class="filter-group">
+                  <label>作业标题</label>
+                  <input type="text" class="form-control" placeholder="输入作业标题搜索">
+                </div>
+                <div class="filter-group">
+                  <label>部门</label>
+                  <select class="form-select">
+                    <option>全部部门</option>
+                    <option>后端</option>
+                    <option>前端</option>
+                    <option>SRE</option>
+                    <option>产品</option>
+                    <option>视觉设计</option>
+                    <option>Android</option>
+                    <option>ios</option>
+                  </select>
+                </div>
+                <div class="filter-group">
+                  <label>截止状态</label>
+                  <select class="form-select">
+                    <option>进行中</option>
+                    <option>已截止</option>
+                    <option>全部</option>
+                  </select>
+                </div>
+                <div class="filter-group">
+                  <label>提交状态</label>
+                  <select class="form-select">
+                    <option>全部</option>
+                    <option>已提交</option>
+                    <option>未提交</option>
+                  </select>
+                </div>
+                <div class="filter-group">
+                  <label>排序</label>
+                  <select class="form-select">
+                    <option>截止时间 (近到远)</option>
+                    <option>截止时间 (远到近)</option>
+                    <option>创建时间 (近到远)</option>
+                    <option>创建时间 (远到近)</option>
+                  </select>
+                </div>
+                <button class="apply-filter">应用筛选</button>
+                <button class="add-homework-btn" data-bs-toggle="modal" data-bs-target="#addHomeworkModal">增加作业</button>
+              </div>
             </div>
-            <div class="filter-form">
-              <div class="filter-group">
-                <label>作业标题</label>
-                <input type="text" class="form-control" placeholder="输入作业标题搜索">
+
+            <!-- 右侧作业列表 -->
+            <div class="homework-list">
+              <div class="homework-grid" id="homeworkGrid">
+                <!-- 作业卡片示例 -->
+                <div class="homework-card">
+                  <div class="homework-card-header">
+                    <h5>JavaScript基础作业</h5>
+                    <span class="deadline">截止: 2026-02-01</span>
+                  </div>
+                  <div class="homework-card-body">
+                    <p>完成JavaScript基础语法练习，包括变量、函数、对象等知识点</p>
+                    <div class="homework-card-footer">
+                      <span class="department-tag">前端开发</span>
+                      <button class="view-btn">查看</button>
+                    </div>
+                  </div>
+                </div>
+                <div class="homework-card">
+                  <div class="homework-card-header">
+                    <h5>CSS布局练习</h5>
+                    <span class="deadline">截止: 2026-02-03</span>
+                  </div>
+                  <div class="homework-card-body">
+                    <p>使用Flexbox和Grid实现响应式布局，完成指定的页面设计</p>
+                    <div class="homework-card-footer">
+                      <span class="department-tag">前端开发</span>
+                      <button class="view-btn">查看</button>
+                    </div>
+                  </div>
+                </div>
+                <div class="homework-card">
+                  <div class="homework-card-header">
+                    <h5>Node.js后端开发</h5>
+                    <span class="deadline">截止: 2026-02-05</span>
+                  </div>
+                  <div class="homework-card-body">
+                    <p>使用Node.js和Express框架创建RESTful API，实现用户认证功能</p>
+                    <div class="homework-card-footer">
+                      <span class="department-tag">后端开发</span>
+                      <button class="view-btn">查看</button>
+                    </div>
+                  </div>
+                </div>
+                <div class="homework-card">
+                  <div class="homework-card-header">
+                    <h5>UI设计练习</h5>
+                    <span class="deadline">截止: 2026-02-07</span>
+                  </div>
+                  <div class="homework-card-body">
+                    <p>为RedRock系统设计一个新的登录页面，要求美观、易用</p>
+                    <div class="homework-card-footer">
+                      <span class="department-tag">设计</span>
+                      <button class="view-btn">查看</button>
+                    </div>
+                  </div>
+                </div>
+
+
+
+
+
+
               </div>
-              <div class="filter-group">
-                <label>部门</label>
-                <select class="form-select">
-                  <option>全部部门</option>
-                  <option>后端</option>
-                  <option>前端</option>
-                  <option>SRE</option>
-                  <option>产品</option>
-                  <option>视觉设计</option>
-                  <option>Android</option>
-                  <option>ios</option>
-                </select>
-              </div>
-              <div class="filter-group">
-                <label>截止状态</label>
-                <select class="form-select">
-                  <option>进行中</option>
-                  <option>已截止</option>
-                  <option>全部</option>
-                </select>
-              </div>
-              <div class="filter-group">
-                <label>提交状态</label>
-                <select class="form-select">
-                  <option>全部</option>
-                  <option>已提交</option>
-                  <option>未提交</option>
-                </select>
-              </div>
-              <div class="filter-group">
-                <label>排序</label>
-                <select class="form-select">
-                  <option>截止时间 (近到远)</option>
-                  <option>截止时间 (远到近)</option>
-                  <option>创建时间 (近到远)</option>
-                  <option>创建时间 (远到近)</option>
-                </select>
-              </div>
-              <button class="apply-filter">应用筛选</button>
-              <button class="add-homework-btn" data-bs-toggle="modal" data-bs-target="#addHomeworkModal">增加作业</button>
             </div>
           </div>
-
-          <!-- 右侧作业列表 -->
-          <div class="homework-list">
-            <div class="homework-grid">
-              <!-- 作业卡片示例 -->
-              <div class="homework-card">
-                <div class="homework-card-header">
-                  <h5>JavaScript基础作业</h5>
-                  <span class="deadline">截止: 2026-02-01</span>
-                </div>
-                <div class="homework-card-body">
-                  <p>完成JavaScript基础语法练习，包括变量、函数、对象等知识点</p>
-                  <div class="homework-card-footer">
-                    <span class="department-tag">前端开发</span>
-                    <button class="view-btn">查看</button>
-                  </div>
-                </div>
-              </div>
-              <div class="homework-card">
-                <div class="homework-card-header">
-                  <h5>CSS布局练习</h5>
-                  <span class="deadline">截止: 2026-02-03</span>
-                </div>
-                <div class="homework-card-body">
-                  <p>使用Flexbox和Grid实现响应式布局，完成指定的页面设计</p>
-                  <div class="homework-card-footer">
-                    <span class="department-tag">前端开发</span>
-                    <button class="view-btn">查看</button>
-                  </div>
-                </div>
-              </div>
-              <div class="homework-card">
-                <div class="homework-card-header">
-                  <h5>Node.js后端开发</h5>
-                  <span class="deadline">截止: 2026-02-05</span>
-                </div>
-                <div class="homework-card-body">
-                  <p>使用Node.js和Express框架创建RESTful API，实现用户认证功能</p>
-                  <div class="homework-card-footer">
-                    <span class="department-tag">后端开发</span>
-                    <button class="view-btn">查看</button>
-                  </div>
-                </div>
-              </div>
-              <div class="homework-card">
-                <div class="homework-card-header">
-                  <h5>UI设计练习</h5>
-                  <span class="deadline">截止: 2026-02-07</span>
-                </div>
-                <div class="homework-card-body">
-                  <p>为RedRock系统设计一个新的登录页面，要求美观、易用</p>
-                  <div class="homework-card-footer">
-                    <span class="department-tag">设计</span>
-                    <button class="view-btn">查看</button>
-                  </div>
-                </div>
-              </div>
+          <div class="homework-pagination" id="homeworkPagination">
+            <button class="pagination-btn pagination-prev" id="prevPageBtn">上一页</button>
+            <div class="pagination-numbers" id="paginationNumbers">
+              <!-- 页码会动态生成 -->
             </div>
+            <button class="pagination-btn pagination-next" id="nextPageBtn">下一页</button>
           </div>
         </div>
       </div>
