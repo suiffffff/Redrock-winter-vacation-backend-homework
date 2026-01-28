@@ -313,6 +313,7 @@ function setupRegister() {
 
 
 function setupSystem() {
+
   document.querySelector('.dropdown-btn').addEventListener('click', (e) => {
     e.stopPropagation();
     const dropdownMenu = document.getElementById('userDropdown')
@@ -330,32 +331,48 @@ function setupSystem() {
   // 导航栏切换
   // 分页功能
   const homeworkPagination = {
+    //this是homeworkPagination，因为是在外面homeworkPagination.init()调用了方法
     currentPage: 1,
+    //占位符，之后会被修改,一页显示多少
     itemsPerPage: 3,
+    //有多少页
     totalPages: 2,
+    //存储数据
     allHomeworkCards: [],
 
     init() {
       const grid = document.getElementById('homeworkGrid');
-      if (!grid) return;
 
+      //转节点列表转数组
       this.allHomeworkCards = Array.from(grid.querySelectorAll('.homework-card'));
+      //计算每页显示多少卡片
       this.calculateItemsPerPage();
+      //计算页数
       this.updateTotalPages();
+      //绑定点击事件
       this.bindEvents();
+      //初始渲染，强制显示第一页
       this.renderPage(1);
+      //响应式处理，监听点击以及窗口变化
       this.bindResizeEvent();
     },
 
     bindResizeEvent() {
+      let resizeTimeout;
+      //监听窗口变化
       window.addEventListener('resize', () => {
-        const oldItemsPerPage = this.itemsPerPage;
-        this.calculateItemsPerPage();
+        clearTimeout(resizeTimeout);
+        resizeTimeout = setTimeout(() => {
+          //如果旧的卡片与新的卡片数量一样，就不进行跳转
+          const oldItemsPerPage = this.itemsPerPage;
+          this.calculateItemsPerPage();
 
-        if (oldItemsPerPage !== this.itemsPerPage) {
-          this.updateTotalPages();
-          this.renderPage(1);
-        }
+          if (oldItemsPerPage !== this.itemsPerPage) {
+            this.updateTotalPages().then(() => {
+              this.renderPage(1);
+            });
+          }
+        }, 100);
       });
     },
 
@@ -363,33 +380,40 @@ function setupSystem() {
       const grid = document.getElementById('homeworkGrid');
       if (!grid) return;
 
+      //拿出grid的所有css样式
       const computedStyle = window.getComputedStyle(grid);
+      //找到columns，就是有几列
       const gridTemplateColumns = computedStyle.getPropertyValue('grid-template-columns');
+      //算出当前一行有几列
       const columnCount = gridTemplateColumns.split(' ').length;
-
+      //一共三行
       this.itemsPerPage = columnCount * 3;
     },
 
     async updateTotalPages() {
       try {
-        const response = await request('/homework/count', {
+        const response = await request('/homework', {
           method: 'GET'
         });
 
         if (response.ok) {
           const result = await response.json();
+
+          console.log(result)
+
           if (result.code === 0 && result.data && result.data.total !== undefined) {
             const totalItems = result.data.total;
             this.totalPages = Math.ceil(totalItems / this.itemsPerPage);
+            return;
           }
         }
       } catch (error) {
         console.log('获取作业总数失败，使用默认计算');
-        this.totalPages = Math.ceil(this.allHomeworkCards.length / this.itemsPerPage);
       }
 
+      this.totalPages = Math.ceil(this.allHomeworkCards.length / this.itemsPerPage);
       if (this.totalPages < 1) {
-        this.totalPages = Math.max(1, Math.ceil(this.allHomeworkCards.length / this.itemsPerPage));
+        this.totalPages = 1;
       }
     },
 
@@ -425,12 +449,98 @@ function setupSystem() {
 
       container.innerHTML = '';
 
-      for (let i = 1; i <= this.totalPages; i++) {
-        const btn = document.createElement('button');
-        btn.className = `pagination-btn${i === this.currentPage ? ' active' : ''}`;
-        btn.textContent = i;
-        btn.addEventListener('click', () => this.renderPage(i));
-        container.appendChild(btn);
+      if (this.totalPages <= 7) {
+        for (let i = 1; i <= this.totalPages; i++) {
+          const btn = document.createElement('button');
+          btn.className = `pagination-btn${i === this.currentPage ? ' active' : ''}`;
+          btn.textContent = i;
+          btn.addEventListener('click', () => this.renderPage(i));
+          container.appendChild(btn);
+        }
+      } else {
+        const pageButtons = [];
+
+        if (this.currentPage <= 4) {
+          for (let i = 1; i <= 5; i++) {
+            pageButtons.push(i);
+          }
+          pageButtons.push('...');
+          pageButtons.push(this.totalPages);
+        } else if (this.currentPage >= this.totalPages - 3) {
+          pageButtons.push(1);
+          pageButtons.push('...');
+          for (let i = this.totalPages - 4; i <= this.totalPages; i++) {
+            pageButtons.push(i);
+          }
+        } else {
+          pageButtons.push(1);
+          pageButtons.push('...');
+          for (let i = this.currentPage - 2; i <= this.currentPage + 2; i++) {
+            pageButtons.push(i);
+          }
+          pageButtons.push('...');
+          pageButtons.push(this.totalPages);
+        }
+
+        pageButtons.forEach(item => {
+          if (item === '...') {
+            const ellipsis = document.createElement('span');
+            ellipsis.className = 'pagination-ellipsis';
+            ellipsis.textContent = '...';
+            container.appendChild(ellipsis);
+          } else {
+            const btn = document.createElement('button');
+            btn.className = `pagination-btn${item === this.currentPage ? ' active' : ''}`;
+            btn.textContent = item;
+            btn.addEventListener('click', () => this.renderPage(item));
+            container.appendChild(btn);
+          }
+        });
+      }
+
+      this.addPageJumpInput(container);
+    },
+
+    addPageJumpInput(container) {
+      const jumpContainer = document.createElement('div');
+      jumpContainer.className = 'pagination-jump';
+      jumpContainer.innerHTML = `
+        <span>跳转到</span>
+        <input type="number" class="page-jump-input" min="1" max="${this.totalPages}" value="${this.currentPage}">
+        <span>页</span>
+        <button class="page-jump-btn">确定</button>
+      `;
+      container.appendChild(jumpContainer);
+
+      const jumpInput = jumpContainer.querySelector('.page-jump-input');
+      const jumpBtn = jumpContainer.querySelector('.page-jump-btn');
+
+      if (jumpInput) {
+        jumpInput.addEventListener('change', (e) => {
+          let value = parseInt(e.target.value);
+          if (isNaN(value)) value = 1;
+          if (value < 1) value = 1;
+          if (value > this.totalPages) value = this.totalPages;
+          e.target.value = value;
+        });
+
+        jumpInput.addEventListener('keypress', (e) => {
+          if (e.key === 'Enter') {
+            const page = parseInt(jumpInput.value);
+            if (!isNaN(page) && page >= 1 && page <= this.totalPages) {
+              this.renderPage(page);
+            }
+          }
+        });
+      }
+
+      if (jumpBtn) {
+        jumpBtn.addEventListener('click', () => {
+          const page = parseInt(jumpInput.value);
+          if (!isNaN(page) && page >= 1 && page <= this.totalPages) {
+            this.renderPage(page);
+          }
+        });
       }
     },
 

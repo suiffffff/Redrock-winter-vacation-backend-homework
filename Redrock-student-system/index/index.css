@@ -851,9 +851,58 @@ body {
 .pagination-numbers {
   display: flex;
   gap: 4px;
+  align-items: center;
 }
 
 .pagination-numbers .pagination-btn {
   min-width: 40px;
   padding: 8px 12px;
+}
+
+.pagination-ellipsis {
+  padding: 8px 4px;
+  color: #666;
+  font-size: 14px;
+}
+
+.pagination-jump {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: 16px;
+}
+
+.pagination-jump span {
+  font-size: 14px;
+  color: #666;
+}
+
+.page-jump-input {
+  width: 60px;
+  padding: 6px 8px;
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+  font-size: 14px;
+  text-align: center;
+}
+
+.page-jump-input:focus {
+  outline: none;
+  border-color: #80bdff;
+  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+.page-jump-btn {
+  padding: 6px 12px;
+  border: 1px solid #ced4da;
+  background-color: #fff;
+  border-radius: 4px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.page-jump-btn:hover {
+  background-color: #f8f9fa;
+  border-color: #adb5bd;
 }
