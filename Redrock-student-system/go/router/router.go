@@ -12,6 +12,7 @@ func SetUpRouter() *gin.Engine {
 	{
 		public.POST("/register", handler.AddUser)
 		public.GET("/check", handler.FindUserName)
+		public.POST("/login", handler.Login)
 	}
 	return r
 }

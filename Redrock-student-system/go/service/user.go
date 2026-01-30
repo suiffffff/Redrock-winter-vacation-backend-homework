@@ -7,7 +7,7 @@ import (
 	"system/pkg"
 )
 
-func AddUser(req dto.AddUserReq) error {
+func AddUser(req *dto.AddUserReq) error {
 	usermodel := models.User{
 		Username:   req.Username,
 		Password:   pkg.Jiami(req.Password),
@@ -18,4 +18,11 @@ func AddUser(req dto.AddUserReq) error {
 }
 func FindUserName(username string) (bool, error) {
 	return dao.FindUserName(username)
+}
+func Login(req *dto.LoginReq) error {
+	usermodel := models.User{
+		Username: req.Username,
+		Password: req.Password,
+	}
+	return dao.Login(&usermodel)
 }

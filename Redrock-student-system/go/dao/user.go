@@ -15,3 +15,6 @@ func FindUserName(username string) (bool, error) {
 	}
 	return count > 0, nil
 }
+func Login(user *models.User) error {
+	return DB.Create(user).Error
+}

@@ -11,19 +11,13 @@ func JWTAuthMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		tokenHeader := c.GetHeader("Authorization")
 		if tokenHeader == "" || !strings.HasPrefix(tokenHeader, "Bearer") {
-			c.JSON(401, gin.H{
-				"code": 401,
-				"msg":  "未登录或Token格式错误",
-			})
+			pkg.ErrorWithStatus(c, 401, pkg.CodeAuthError, "未登录或Token格式错误")
 			c.Abort()
 			return
 		}
 		claims, err := pkg.VerifyAccessToken(tokenHeader)
 		if err != nil {
-			c.JSON(401, gin.H{
-				"code": 401,
-				"msg":  "哦你没有码: " + err.Error(),
-			})
+			pkg.ErrorWithStatus(c, 401, pkg.CodeAuthError, "Token无效: "+err.Error())
 			c.Abort()
 			return
 		}
