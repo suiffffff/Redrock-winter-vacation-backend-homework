@@ -1,5 +1,8 @@
 package dto
 
+type FindUserNameReq struct {
+	Username string `json:"username" binding:"required"`
+}
 type AddUserReq struct {
 	Username   string `json:"username" binding:"required"`
 	Password   string `json:"password" binding:"required"`

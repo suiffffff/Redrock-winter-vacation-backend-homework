@@ -18,3 +18,11 @@ type User struct {
 	UpdatedAt  time.Time      `gorm:"" json:"updated_at"`
 	DeletedAt  gorm.DeletedAt `gorm:"" json:"-"`
 }
+
+type UserToken struct {
+	ID           uint64 `gorm:"primaryKey"`
+	UserID       uint64 `gorm:"index"`
+	RefreshToken string `gorm:"type:varchar(512);unique"`
+	ExpiresAt    int64
+	Revoked      bool `gorm:"default:false"`
+}

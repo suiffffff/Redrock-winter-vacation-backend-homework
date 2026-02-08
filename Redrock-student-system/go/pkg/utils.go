@@ -30,7 +30,7 @@ func Jiami(Password string) string {
 
 type CustomClaims struct {
 	//用户ID，简称UID，原神...
-	UserID uint `json:"uid"`
+	UserID uint64 `json:"uid"`
 	//用户角色，可以精确的推送小广告？
 	Role string `json:"role"`
 	//记录访问令牌还是刷新令牌
@@ -42,7 +42,7 @@ type CustomClaims struct {
 	jwt.RegisteredClaims
 }
 
-func GenerateTokens(userID uint, role string) (accessToken string, refreshToken string, err error) {
+func GenerateTokens(userID uint64, role string) (accessToken string, refreshToken string, err error) {
 	now := time.Now()
 	accessClaims := CustomClaims{
 		UserID: userID,

@@ -18,7 +18,7 @@ func InitMySQL() {
 	if err != nil {
 		panic(err)
 	}
-	err = DB.AutoMigrate(&models.User{}, &models.Homework{}, &models.Submission{})
+	err = DB.AutoMigrate(&models.User{}, &models.UserToken{}, &models.Homework{}, &models.Submission{})
 	if err != nil {
 		log.Fatal("自动迁移失败", err)
 	}
