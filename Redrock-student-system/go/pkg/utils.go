@@ -1,8 +1,6 @@
 package pkg
 
 import (
-	"crypto/md5"
-	"encoding/hex"
 	"errors"
 	"fmt"
 	"strings"
@@ -10,6 +8,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
+	"golang.org/x/crypto/bcrypt"
 )
 
 //是时候拿出我以前写（抄）的jwt了
@@ -35,11 +34,13 @@ func GetUserID(c *gin.Context) (uint64, error) {
 	return uid, nil
 }
 
-// 根据浅显的认知，标准md5的加密没Secret，那么密码不就相当于可以被破解的吗？
-func Jiami(Password string) string {
-	h := md5.New()
-	h.Write([]byte(Password))
-	return hex.EncodeToString(h.Sum(nil))
+func HashPassword(password string) (string, error) {
+	bytes, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+	return string(bytes), err
+}
+func CheckPassword(password, hash string) bool {
+	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
+	return err == nil
 }
 
 type CustomClaims struct {

@@ -16,14 +16,18 @@ func FindUserName(req *dto.FindUserNameReq) (bool, error) {
 	return dao.FindUserName(&usermodel)
 }
 func AddUser(req *dto.AddUserReq) (*models.User, error) {
+	password, err := pkg.HashPassword(req.Password)
+	if err != nil {
+		return nil, errors.New("密码过长")
+	}
 	usermodel := models.User{
 		Username:   req.Username,
-		Password:   pkg.Jiami(req.Password),
+		Password:   password,
 		Nickname:   req.Nickname,
 		Department: req.Department,
 	}
 	//需要注意的是这里usermodel成为了一个指针，在dao层创建后会返回User结构的所有值
-	err := dao.AddUser(&usermodel)
+	err = dao.AddUser(&usermodel)
 	if err != nil {
 		return nil, err
 	}
@@ -31,11 +35,15 @@ func AddUser(req *dto.AddUserReq) (*models.User, error) {
 }
 
 func Login(req *dto.LoginReq) (*models.User, string, string, error) {
+	password, err := pkg.HashPassword(req.Password)
+	if err != nil {
+		return nil, "", "", errors.New("密码过长")
+	}
 	usermodel := models.User{
 		Username: req.Username,
-		Password: pkg.Jiami(req.Password),
+		Password: password,
 	}
-	err := dao.Login(&usermodel)
+	err = dao.Login(&usermodel)
 	if err != nil {
 		return nil, "", "", err
 	}
@@ -91,7 +99,7 @@ func DeleteAccount(userID uint64, req dto.DeleteAccountReq) error {
 	if err != nil {
 		return errors.New("用户不存在")
 	}
-	if usermodel.Password != pkg.Jiami(req.Password) {
+	if !pkg.CheckPassword(req.Password, usermodel.Password) {
 		return errors.New("密码错误")
 	}
 	return dao.DeleteAccount(&usermodel)
