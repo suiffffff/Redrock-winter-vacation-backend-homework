@@ -21,5 +21,10 @@ func SetUpRouter() *gin.Engine {
 		userGroup.GET("/profile", handler.GetProfile)
 		userGroup.DELETE("/account", handler.DeleteAccount)
 	}
+	homeworkGroup := r.Group("/homework", middleware.JWTAuthMiddleware())
+	{
+		homeworkGroup.POST("", handler.AddHomework)
+		homeworkGroup.GET("", handler.FindHomework)
+	}
 	return r
 }

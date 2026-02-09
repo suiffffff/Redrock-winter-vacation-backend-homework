@@ -21,6 +21,26 @@ var (
 	refreshTTL    = 7 * 24 * time.Hour
 )
 
+func GetDepartmentLabel(code string) string {
+	switch code {
+	case "backend":
+		return "后端"
+	case "frontend":
+		return "前端"
+	case "sre":
+		return "SRE"
+	case "product":
+		return "产品"
+	case "design":
+		return "视觉设计"
+	case "android":
+		return "Android"
+	case "ios":
+		return "iOS"
+	default:
+		return "未知部门"
+	}
+}
 func GetUserID(c *gin.Context) (uint64, error) {
 	value, exists := c.Get("userID")
 	if !exists {

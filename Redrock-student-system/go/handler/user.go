@@ -10,7 +10,7 @@ import (
 
 func FindUserName(c *gin.Context) {
 	var req dto.FindUserNameReq
-	if err := c.ShouldBindJSON(&req); err != nil {
+	if err := c.ShouldBindQuery(&req); err != nil {
 		pkg.Error(c, pkg.CodeParamError, "用户名不能为空")
 		return
 	}
@@ -36,7 +36,7 @@ func AddUser(c *gin.Context) {
 		pkg.Error(c, pkg.CodeSystemError, "注册失败: "+err.Error())
 		return
 	}
-	departmentlabel := getDepartmentLabel(user.Department)
+	departmentlabel := pkg.GetDepartmentLabel(user.Department)
 	resp := dto.UserInfo{
 		ID:              user.ID,
 		UserName:        user.Username,
@@ -58,7 +58,7 @@ func Login(c *gin.Context) {
 		pkg.Error(c, pkg.CodeSystemError, "系统查询错误")
 		return
 	}
-	departmentLabel := getDepartmentLabel(user.Department)
+	departmentLabel := pkg.GetDepartmentLabel(user.Department)
 	resp := dto.LoginRes{
 		AccessToken:  at,
 		RefreshToken: rt,
@@ -119,7 +119,7 @@ func GetProfile(c *gin.Context) {
 		pkg.Error(c, pkg.CodeSystemError, "查询失败")
 		return
 	}
-	departmentLabel := getDepartmentLabel(user.Department)
+	departmentLabel := pkg.GetDepartmentLabel(user.Department)
 	resp := dto.UserInfo{
 		ID:              user.ID,
 		UserName:        user.Username,
@@ -147,25 +147,4 @@ func DeleteAccount(c *gin.Context) {
 		return
 	}
 	pkg.Success(c, "账号已注销", nil)
-}
-
-func getDepartmentLabel(code string) string {
-	switch code {
-	case "backend":
-		return "后端"
-	case "frontend":
-		return "前端"
-	case "sre":
-		return "SRE"
-	case "product":
-		return "产品"
-	case "design":
-		return "视觉设计"
-	case "android":
-		return "Android"
-	case "ios":
-		return "iOS"
-	default:
-		return "未知部门"
-	}
 }
