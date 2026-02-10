@@ -25,3 +25,6 @@ func FindHomework(homework *models.Homework) ([]models.Homework, int64, error) {
 
 	return list, total, nil
 }
+func FindHomeworkByID(homework *models.Homework) error {
+	return DB.Preload("Creator").First(&homework, homework.ID).Error
+}

@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"strconv"
 	"system/dto"
 	"system/pkg"
 	"system/service"
@@ -58,10 +59,7 @@ func FindHomework(c *gin.Context) {
 	var respList []dto.HomeworkItem
 	for _, item := range list {
 		deptLabel := pkg.GetDepartmentLabel(item.Department)
-		reqSub := dto.FindSubmission{
-			HomeworkID: item.ID,
-		}
-		submissionCount, err := service.FindSubmission(reqSub)
+		submissionCount, err := service.FindSubmissionCount(item.ID)
 		if err != nil {
 			pkg.Error(c, pkg.CodeSystemError, "查询错误")
 			return
@@ -73,7 +71,7 @@ func FindHomework(c *gin.Context) {
 			DepartmentLabel: deptLabel,
 			Deadline:        item.Deadline,
 			AllowLate:       item.AllowLate,
-			SubmissionCount: submissionCount.HomeworkID,
+			SubmissionCount: submissionCount,
 			Creator: dto.CreatorInfo{
 				ID:       item.Creator.ID,
 				Nickname: item.Creator.Username,
@@ -88,4 +86,76 @@ func FindHomework(c *gin.Context) {
 		PageSize: req.PageSize,
 	}
 	pkg.Success(c, "获取成功", resp)
+}
+func FindHomeworkByID(c *gin.Context) {
+	idStr := c.Param("id")
+	homeworkID, _ := strconv.ParseUint(idStr, 10, 64)
+	homework, err := service.FindHomeworkByID(homeworkID)
+	count, _ := service.FindSubmissionCount(homeworkID)
+	if err != nil {
+		pkg.Error(c, pkg.CodeNotFound, "作业不存在")
+		return
+	}
+	userID, err := pkg.GetUserID(c)
+	if err != nil {
+		pkg.ErrorWithStatus(c, 401, pkg.CodeAuthError, err.Error())
+		return
+	}
+	user, err := service.GetProfile(userID)
+	if err != nil {
+		pkg.Error(c, pkg.CodeSystemError, "查询身份失败")
+		return
+	}
+	var mySubDTO *dto.MySubmissionInfo
+
+	if user.Role != "admin" {
+		mySubModel, err := service.FindMySubmission(homeworkID, userID)
+		if err == nil {
+			mySubDTO = &dto.MySubmissionInfo{
+				ID:          mySubModel.ID,
+				Score:       mySubModel.Score,
+				IsExcellent: mySubModel.IsExcellent,
+			}
+		}
+	}
+
+	creator := dto.CreatorInfo{
+		ID:       homework.Creator.ID,
+		Nickname: homework.Creator.Nickname,
+	}
+	resp := dto.FindHomeworkByIDRes{
+		ID:              homework.ID,
+		Title:           homework.Title,
+		Description:     homework.Description,
+		Department:      homework.Department,
+		DepartmentLabel: pkg.GetDepartmentLabel(homework.Department),
+		Creator:         creator,
+		Deadline:        homework.Deadline,
+		AllowLate:       homework.AllowLate,
+		SubmissionCount: count,
+		MySubmission:    mySubDTO,
+	}
+	pkg.Success(c, "获取成功", resp)
+}
+func UpdateHomework(c *gin.Context) {
+	var req dto.UpdateHomework
+	if err := c.ShouldBindJSON(&req); err != nil {
+		pkg.Error(c, pkg.CodeParamError, "参数错误")
+		return
+	}
+	userID, err := pkg.GetUserID(c)
+	if err != nil {
+		pkg.ErrorWithStatus(c, 401, pkg.CodeAuthError, err.Error())
+		return
+	}
+	user, err := service.GetProfile(userID)
+	if err != nil {
+		pkg.Error(c, pkg.CodeSystemError, "查询身份失败")
+		return
+	}
+	if user.Role != "admin" {
+		pkg.Error(c, pkg.CodeParamError, "你不是老登哦，亲")
+		return
+	}
+
 }

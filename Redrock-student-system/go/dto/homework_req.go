@@ -14,3 +14,10 @@ type FindHomeworkReq struct {
 	Page       int    `json:"page"`
 	PageSize   int    `json:"page_size"`
 }
+
+type UpdateHomework struct {
+	Title       string    `json:"title"`
+	Description string    `json:"description" `
+	Deadline    time.Time `json:"deadline" `
+	AllowLate   bool      `json:"allow_late"`
+}

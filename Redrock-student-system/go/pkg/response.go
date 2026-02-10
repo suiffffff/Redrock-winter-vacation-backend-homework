@@ -13,9 +13,9 @@ type Response struct {
 const (
 	CodeSuccess = 0
 	//错误类型
-	CodeParamError = 10001
-	CodeAuthError  = 10002
-
+	CodeParamError  = 10001
+	CodeAuthError   = 10002
+	CodeNotFound    = 10004
 	CodeSystemError = 50000
 )
 

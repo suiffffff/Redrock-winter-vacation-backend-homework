@@ -31,3 +31,16 @@ func FindHomework(req dto.FindHomeworkReq) ([]models.Homework, int64, error) {
 	}
 	return list, total, nil
 }
+func FindHomeworkByID(homeworkID uint64) (*models.Homework, error) {
+	homeworkmodel := models.Homework{
+		ID: homeworkID,
+	}
+	err := dao.FindHomeworkByID(&homeworkmodel)
+	if err != nil {
+		return nil, err
+	}
+	return &homeworkmodel, nil
+}
+func UpdateHomework() {
+
+}

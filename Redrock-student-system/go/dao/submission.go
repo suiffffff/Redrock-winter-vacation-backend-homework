@@ -1,8 +1,30 @@
 package dao
 
-import "system/models"
+import (
+	"system/dto"
+	"system/models"
+)
 
-// 略微思索，这里好像能复用啊？只需要把不同的接口在handler鉴权就行
-func FindSubmissionCount(submission *models.Submission) error {
-	return DB.Where("homework_id=?", submission.HomeworkID).Error
+// 作业附加接口
+func FindSubmissionCount(homeworkID uint64) (int64, error) {
+	var count int64
+	err := DB.Model(&models.Submission{}).
+		Where("homework_id = ?", homeworkID).
+		Count(&count).Error
+	return count, err
+}
+func FindMySubmisssion(homeworkID, userID uint64) (*dto.MySubmissionInfo, error) {
+	var result dto.MySubmissionInfo
+	err := DB.Model(&models.Submission{}).
+		Where("homework_id = ? AND student_id = ?", homeworkID, userID).
+		Select("id, score, is_excellent").
+		Scan(&result).Error
+	if err != nil {
+		return nil, err
+	}
+	if result.ID == 0 {
+		return nil, nil
+	}
+
+	return &result, nil
 }

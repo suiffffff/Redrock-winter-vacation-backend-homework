@@ -25,6 +25,9 @@ func SetUpRouter() *gin.Engine {
 	{
 		homeworkGroup.POST("", handler.AddHomework)
 		homeworkGroup.GET("", handler.FindHomework)
+		homeworkGroup.GET("/:id", handler.FindHomeworkByID)
+		homeworkGroup.PUT("/:id", handler.UpdateHomework)
+
 	}
 	return r
 }
