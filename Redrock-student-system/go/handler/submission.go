@@ -119,3 +119,85 @@ func FindAllStudentSubmit(c *gin.Context) {
 	}
 	pkg.Success(c, "success", resp)
 }
+func CheckHomework(c *gin.Context) {
+	var req dto.CheckHomeworkReq
+	if err := c.ShouldBindJSON(&req); err != nil {
+		pkg.Error(c, pkg.CodeParamError, "参数错误")
+		return
+	}
+	idStr := c.Param("id")
+	submissionID, _ := strconv.ParseUint(idStr, 10, 64)
+	submission, err := service.FindSubmissionByID(submissionID)
+	if err != nil {
+		pkg.Error(c, pkg.CodeNotFound, "未查询到作业")
+		return
+	}
+	userID, err := pkg.GetUserID(c)
+	if err != nil {
+		pkg.ErrorWithStatus(c, 401, pkg.CodeAuthError, err.Error())
+		return
+	}
+	user, err := service.GetProfile(userID)
+	if err != nil {
+		pkg.Error(c, pkg.CodeSystemError, "查询身份失败")
+		return
+	}
+	if user.Role != "admin" && user.Department != submission.Homework.Department {
+		pkg.Error(c, pkg.CodeNoPermission, "你无权限修改哦，亲")
+		return
+	}
+	resp, err := service.CheckHomework(&req, submissionID)
+	if err != nil {
+		pkg.Error(c, pkg.CodeSystemError, "批改失败")
+	}
+	pkg.Success(c, "批改成功", resp)
+}
+
+// 感觉有点多余
+func UpdateExcellent(c *gin.Context) {
+	var req dto.UpdateExcellentReq
+	if err := c.ShouldBindJSON(&req); err != nil {
+		pkg.Error(c, pkg.CodeParamError, "参数错误")
+		return
+	}
+	idStr := c.Param("id")
+	submissionID, _ := strconv.ParseUint(idStr, 10, 64)
+	submission, err := service.FindSubmissionByID(submissionID)
+	if err != nil {
+		pkg.Error(c, pkg.CodeNotFound, "未查询到作业")
+		return
+	}
+	userID, err := pkg.GetUserID(c)
+	if err != nil {
+		pkg.ErrorWithStatus(c, 401, pkg.CodeAuthError, err.Error())
+		return
+	}
+	user, err := service.GetProfile(userID)
+	if err != nil {
+		pkg.Error(c, pkg.CodeSystemError, "查询身份失败")
+		return
+	}
+	if user.Role != "admin" && user.Department != submission.Homework.Department {
+		pkg.Error(c, pkg.CodeNoPermission, "你无权限修改哦，亲")
+		return
+	}
+	resp, err := service.UpdateExcellent(&req, submissionID)
+	if err != nil {
+		pkg.Error(c, pkg.CodeSystemError, "修改错误")
+		return
+	}
+	pkg.Success(c, "标记成功", resp)
+}
+func FindExcellent(c *gin.Context) {
+	var req dto.FindExcellentReq
+	if err := c.ShouldBindQuery(&req); err != nil {
+		pkg.Error(c, pkg.CodeParamError, "参数错误")
+		return
+	}
+	resp, err := service.FindExcellent(&req)
+	if err != nil {
+		pkg.Error(c, pkg.CodeSystemError, "查询失败")
+		return
+	}
+	pkg.Success(c, "success", resp)
+}

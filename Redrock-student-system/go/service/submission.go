@@ -40,3 +40,32 @@ func FindAllStudentSubmit(HomeworkID uint64, page, pageSize int) (*dto.FindAllSt
 	}
 	return dao.FindAllStudentSubmit(&submissionmodel, page, pageSize)
 }
+func FindSubmissionByID(submissionID uint64) (*models.Submission, error) {
+	submissionmodel := models.Submission{
+		ID: submissionID,
+	}
+	err := dao.FindSubmissionByID(&submissionmodel)
+	if err != nil {
+		return nil, err
+	}
+	return &submissionmodel, nil
+}
+func CheckHomework(req *dto.CheckHomeworkReq, submissionID uint64) (*dto.CheckHomeworkRes, error) {
+	submissionmodel := models.Submission{
+		Score:       req.Score,
+		Comment:     req.Commit,
+		IsExcellent: req.IsExcellent,
+		ID:          submissionID,
+	}
+	return dao.CheckHomework(&submissionmodel)
+}
+func UpdateExcellent(req *dto.UpdateExcellentReq, submissionId uint64) (*dto.UpdateExcellentRes, error) {
+	submissionmodel := models.Submission{
+		ID:          submissionId,
+		IsExcellent: req.IsExcellent,
+	}
+	return dao.UpdateExcellent(&submissionmodel)
+}
+func FindExcellent(req *dto.FindExcellentReq) (*dto.FindExcellentRes, error) {
+	return dao.FindExcellent(req.Department, req.Page, req.PageSize)
+}

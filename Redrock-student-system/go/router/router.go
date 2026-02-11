@@ -34,6 +34,9 @@ func SetUpRouter() *gin.Engine {
 		submissionGroup.POST("", handler.SubmitHomework)
 		submissionGroup.GET("/my", handler.FindAllMySubmit)
 		submissionGroup.GET("/homework/:homework_id", handler.FindAllStudentSubmit)
+		submissionGroup.PUT("/:id/review", handler.CheckHomework)
+		submissionGroup.PUT("/:id/excellent", handler.UpdateExcellent)
+		submissionGroup.GET("excellent", handler.FindExcellent)
 	}
 	return r
 }

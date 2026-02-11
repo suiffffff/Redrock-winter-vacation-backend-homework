@@ -58,3 +58,37 @@ type FindAllStudentRes struct {
 	Page     uint64       `json:"page"`
 	PageSize uint64       `json:"page_size"`
 }
+type CheckHomeworkRes struct {
+	ID          uint64     `json:"id"`
+	Score       *int       `json:"score"`
+	Comment     string     `json:"comment"`
+	IsExcellent bool       `json:"is_excellent"`
+	ReviewedAt  *time.Time `json:"reviewed_at"`
+}
+type UpdateExcellentRes struct {
+	ID          uint64 `json:"id"`
+	IsExcellent bool   `json:"is_excellent"`
+}
+type ExcellentHomeworkItem struct {
+	ID              uint64 `json:"id"`
+	Title           string `json:"title"`
+	Department      string `json:"department"`
+	DepartmentLabel string `json:"department_label"`
+}
+type ExcellentStudentItem struct {
+	ID       uint64 `json:"id"`
+	NickName string `json:"nick_name"`
+}
+type ExcellentList struct {
+	ID       uint64                `json:"id"`
+	Homework ExcellentHomeworkItem `json:"homework"`
+	Student  ExcellentStudentItem  `json:"student"`
+	Score    *int                  `json:"score"`
+	Comment  string                `json:"comment"`
+}
+type FindExcellentRes struct {
+	List     []ExcellentList `json:"list"`
+	Total    uint64          `json:"total"`
+	Page     uint64          `json:"page"`
+	PageSize uint64          `json:"page_size"`
+}
