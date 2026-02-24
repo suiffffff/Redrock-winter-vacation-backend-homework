@@ -12,6 +12,6 @@ func main() {
 
 	r := router.SetUpRouter()
 
-	fmt.Println("xx，启动！")
-	r.Run()
+	fmt.Println("服务器，启动！")
+	r.Run(":8080")
 }

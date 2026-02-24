@@ -1,7 +1,7 @@
 package dto
 
 type FindUserNameReq struct {
-	Username string `json:"username" binding:"required"`
+	Username string `form:"username" binding:"required"`
 }
 type AddUserReq struct {
 	Username   string `json:"username" binding:"required"`
