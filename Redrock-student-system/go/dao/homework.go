@@ -47,5 +47,5 @@ func UpdateHomework(homework *models.Homework) (*dto.UpdateHomeworkRes, error) {
 	return &result, err
 }
 func DeleteHomework(homework *models.Homework) error {
-	return DB.Delete(homework.ID).Error
+	return DB.Delete(homework).Error
 }

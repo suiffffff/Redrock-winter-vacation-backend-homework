@@ -135,6 +135,7 @@ func DeleteAccount(c *gin.Context) {
 	var req dto.DeleteAccountReq
 	if err := c.ShouldBindJSON(&req); err != nil {
 		pkg.Error(c, pkg.CodeParamError, "参数错误")
+		return
 	}
 	userID, err := pkg.GetUserID(c)
 	if err != nil {

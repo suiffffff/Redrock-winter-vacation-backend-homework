@@ -21,6 +21,9 @@ func FindUserName(user *models.User) (bool, error) {
 func AddUser(user *models.User) error {
 	return DB.Create(user).Error
 }
+func GetUserByUsername(user *models.User) error {
+	return DB.Where("username=?", user.Username).First(user).Error
+}
 func Login(user *models.User) error {
 	username := user.Username
 	password := user.Password

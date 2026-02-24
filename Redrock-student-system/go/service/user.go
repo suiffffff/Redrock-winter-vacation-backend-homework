@@ -35,17 +35,17 @@ func AddUser(req *dto.AddUserReq) (*models.User, error) {
 }
 
 func Login(req *dto.LoginReq) (*models.User, string, string, error) {
-	password, err := pkg.HashPassword(req.Password)
-	if err != nil {
-		return nil, "", "", errors.New("密码过长")
-	}
+	// 先根据用户名查询用户
 	usermodel := models.User{
 		Username: req.Username,
-		Password: password,
 	}
-	err = dao.Login(&usermodel)
+	err := dao.GetUserByUsername(&usermodel)
 	if err != nil {
-		return nil, "", "", err
+		return nil, "", "", errors.New("用户不存在")
+	}
+	// 验证密码
+	if !pkg.CheckPassword(req.Password, usermodel.Password) {
+		return nil, "", "", errors.New("密码错误")
 	}
 	accessToken, refreshToken, err := pkg.GenerateTokens(usermodel.ID, usermodel.Role)
 	if err != nil {
