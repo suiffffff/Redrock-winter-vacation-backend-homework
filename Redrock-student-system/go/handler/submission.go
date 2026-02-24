@@ -108,8 +108,8 @@ func FindAllStudentSubmit(c *gin.Context) {
 		pkg.Error(c, pkg.CodeSystemError, "查询身份失败")
 		return
 	}
-	if user.Role != "admin" && user.Department != Homework.Department {
-		pkg.Error(c, pkg.CodeNoPermission, "你无权限修改哦，亲")
+	if user.Role != "admin" || user.Department != Homework.Department {
+		pkg.Error(c, pkg.CodeNoPermission, "你无权限查询哦，亲")
 		return
 	}
 	resp, err := service.FindAllStudentSubmit(homeworkID, page, pageSize)
@@ -177,7 +177,7 @@ func UpdateExcellent(c *gin.Context) {
 		pkg.Error(c, pkg.CodeSystemError, "查询身份失败")
 		return
 	}
-	if user.Role != "admin" && user.Department != submission.Homework.Department {
+	if user.Role != "admin" || user.Department != submission.Homework.Department {
 		pkg.Error(c, pkg.CodeNoPermission, "你无权限修改哦，亲")
 		return
 	}

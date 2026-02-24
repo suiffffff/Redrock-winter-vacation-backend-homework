@@ -160,7 +160,7 @@ func UpdateHomework(c *gin.Context) {
 		pkg.Error(c, pkg.CodeSystemError, "查询身份失败")
 		return
 	}
-	if user.Role != "admin" && user.Department != oldHomework.Department {
+	if user.Role != "admin" || user.Department != oldHomework.Department {
 		pkg.Error(c, pkg.CodeNoPermission, "你无权限修改哦，亲")
 		return
 	}
@@ -189,7 +189,7 @@ func DeleteHomework(c *gin.Context) {
 		pkg.Error(c, pkg.CodeSystemError, "查询身份失败")
 		return
 	}
-	if user.Role != "admin" && user.Department != oldHomework.Department {
+	if user.Role != "admin" || user.Department != oldHomework.Department {
 		pkg.Error(c, pkg.CodeNoPermission, "你无权限修改哦，亲")
 		return
 	}

@@ -40,4 +40,5 @@ func ErrorWithStatus(c *gin.Context, httpStatus int, code int, msg string) {
 		Message: msg,
 		Data:    nil,
 	})
+
 }

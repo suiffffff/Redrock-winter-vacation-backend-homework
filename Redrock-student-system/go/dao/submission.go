@@ -28,7 +28,7 @@ func FindMySubmission(homeworkID, userID uint64) (*dto.MySubmissionInfo, error) 
 		return nil, err
 	}
 	if result.ID == 0 {
-		return nil, nil
+		return nil, errors.New("submission not found")
 	}
 
 	return &result, nil
@@ -62,8 +62,8 @@ func SubmitHomework(submission *models.Submission) error {
 }
 func FindSubmission(submission *models.Submission) (*dto.SubmitHomeworkRes, error) {
 	var result dto.SubmitHomeworkRes
-	err := DB.Where("homework_id = ? AND student_id = ?", submission.HomeworkID, submission.StudentID).
-		Select("id, score, is_excellent, submitted_at, is_late").
+	err := DB.Model(&models.Submission{}).Where("homework_id = ? AND student_id = ?", submission.HomeworkID, submission.StudentID).
+		Select("id, homework_id, submitted_at, is_late").
 		Scan(&result).Error
 	if err != nil {
 		return nil, err
@@ -115,7 +115,7 @@ func FindAllMySubmit(submission *models.Submission, page, pageSize int) (*dto.Fi
 func FindAllStudentSubmit(submission *models.Submission, page, pageSize int) (*dto.FindAllStudentRes, error) {
 	var submissions []models.Submission
 	var total int64
-	query := DB.Model(&models.Submission{}).Where("student_id = ?", submission.HomeworkID)
+	query := DB.Model(&models.Submission{}).Where("homework_id = ?", submission.HomeworkID)
 	if err := query.Count(&total).Error; err != nil {
 		return nil, err
 	}

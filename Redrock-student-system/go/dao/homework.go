@@ -29,7 +29,7 @@ func FindHomework(homework *models.Homework) ([]models.Homework, int64, error) {
 	return list, total, nil
 }
 func FindHomeworkByID(homework *models.Homework) error {
-	return DB.Preload("Creator").First(&homework, homework.ID).Error
+	return DB.Preload("Creator").First(homework).Error
 }
 func UpdateHomework(homework *models.Homework) (*dto.UpdateHomeworkRes, error) {
 	//有id是自动通过id更新的
